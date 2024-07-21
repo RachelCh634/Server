@@ -1,14 +1,21 @@
-﻿namespace Project
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
+
+namespace Project
 {
     public class Donation
     {
-        public long Id { get; set; }
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        [JsonIgnore]
+        public int Id { get; set; }
         public long DonorId { get; set; }
         public string DonationCategory { get; set; }
         public int HoursAvailable { get; set; }
         public int Rating { get; set; } 
 
-        public Donation(long id, long donorId, string donationCategory, int hoursAvailable, int rating)
+        public Donation(int id, long donorId, string donationCategory, int hoursAvailable, int rating)
         {
             Id = id;
             DonorId = donorId;

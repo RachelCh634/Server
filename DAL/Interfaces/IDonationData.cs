@@ -12,8 +12,8 @@ namespace DAL.Interfaces
     {
         public Task<List<Donation>> GetAllDonation();
         public Task<bool> AddDonation(DonationDto donation);
-        public Task<bool> DeductAvailableHours(int hours, long Id);
-        public Task<bool> DeleteDonation(long Id);
-        public Task<bool> RateDonation(long Id, int rating);
+        public Task<bool> DeductAvailableHours(int hours, int Id);
+        public Task<bool> DeleteDonation(int Id);
+        public Task<bool> RateDonation(int Id, int rating);
     }
 }

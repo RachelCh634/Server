@@ -34,7 +34,7 @@ namespace DAL.Data
             return users;
         }
 
-        public async Task<bool> DeductAvailableHours(int hours, long Id)
+        public async Task<bool> DeductAvailableHours(int hours, int Id)
         {
             var donation = await _context.Donations.FindAsync(Id);
             if (donation == null)
@@ -52,9 +52,9 @@ namespace DAL.Data
             return changes > 0;
         }
 
-        public async Task<bool> DeleteDonation(long donationId)
+        public async Task<bool> DeleteDonation(int Id)
         {
-            var donation = await _context.Donations.FindAsync(donationId);
+            var donation = await _context.Donations.FindAsync(Id);
             if (donation == null)
             {
                 return false; 
@@ -65,9 +65,9 @@ namespace DAL.Data
             return changes > 0;
         }
 
-        public async Task<bool> RateDonation(long donationId, int rating)
+        public async Task<bool> RateDonation(int Id, int rating)
         {
-            var donation = await _context.Donations.FindAsync(donationId);
+            var donation = await _context.Donations.FindAsync(Id);
             if (donation == null)
             {
                 return false; 

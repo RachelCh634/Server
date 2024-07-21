@@ -27,7 +27,7 @@ namespace Project.Controllers
         }
 
         [HttpGet("GetUserById/{id}")]
-        public async Task<ActionResult<User>> GetUserById(long id)
+        public async Task<ActionResult<User>> GetUserById(string id)
         {
             var res = await _userService.GetUserById(id);
             if (res != null)
@@ -45,7 +45,7 @@ namespace Project.Controllers
         }
 
         [HttpPost("AddHoursDonation/{hours}/{id}")]
-        public async Task<ActionResult<bool>> AddHoursDonation(int hours, long id)
+        public async Task<ActionResult<bool>> AddHoursDonation(int hours, string id)
         {
             var res = await _userService.AddHoursDonation(hours, id);
             if (res)
@@ -54,7 +54,7 @@ namespace Project.Controllers
         }
 
         [HttpPost("RemoveHoursAvailable/{hours}/{id}")]
-        public async Task<ActionResult<bool>> RemoveHoursAvailable(int hours, long id)
+        public async Task<ActionResult<bool>> RemoveHoursAvailable(int hours, string id)
         {
             var res = await _userService.RemoveHoursAvailable(hours, id);
             if (res)

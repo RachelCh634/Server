@@ -26,3 +26,17 @@ C:\Users\1\Desktop\תכנות\Project-.NET\MODELS\obj\Debug\net6.0\refint\MODELS
 C:\Users\1\Desktop\תכנות\Project-.NET\MODELS\obj\Debug\net6.0\MODELS.pdb
 C:\Users\1\Desktop\תכנות\Project-.NET\MODELS\obj\Debug\net6.0\MODELS.genruntimeconfig.cache
 C:\Users\1\Desktop\תכנות\Project-.NET\MODELS\obj\Debug\net6.0\ref\MODELS.dll
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\bin\Debug\net6.0\MODELS.deps.json
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\bin\Debug\net6.0\MODELS.runtimeconfig.json
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\bin\Debug\net6.0\MODELS.dll
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\bin\Debug\net6.0\MODELS.pdb
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\obj\Debug\net6.0\MODELS.csproj.AssemblyReference.cache
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\obj\Debug\net6.0\MODELS.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\obj\Debug\net6.0\MODELS.AssemblyInfoInputs.cache
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\obj\Debug\net6.0\MODELS.AssemblyInfo.cs
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\obj\Debug\net6.0\MODELS.csproj.CoreCompileInputs.cache
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\obj\Debug\net6.0\MODELS.dll
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\obj\Debug\net6.0\refint\MODELS.dll
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\obj\Debug\net6.0\MODELS.pdb
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\obj\Debug\net6.0\MODELS.genruntimeconfig.cache
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\MODELS\obj\Debug\net6.0\ref\MODELS.dll

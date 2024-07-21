@@ -17,9 +17,26 @@ namespace MODELS.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=DESKTOP-L1QQEC3\\SQLEXPRESS;Database=SecondDB;Integrated Security=True;",
+                optionsBuilder.UseSqlServer("Server=RACHEL\\SQLEXPRESS;Database=SecondDB;Integrated Security=True;",
                     b => b.MigrationsAssembly("MODELS"));
             }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+                .Property(u => u.Id)
+                .ValueGeneratedNever();
+
+            modelBuilder.Entity<User>()
+           .Property(u => u.IdentityId)
+           .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Donation>()
+           .Property(u => u.Id)
+           .ValueGeneratedOnAdd();
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

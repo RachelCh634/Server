@@ -8,12 +8,10 @@ namespace DAL.DTO
 {
     public class DonationDto
     {
-        public long Id { get; set; }
-
+        public int Id  { get; set; }
         public long DonorId { get; set; }
         public string DonationCategory { get; set; }
         public int HoursAvailable { get; set; }
-      
         public int Rating { get; set; }
     }
 }

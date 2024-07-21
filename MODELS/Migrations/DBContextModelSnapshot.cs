@@ -23,11 +23,11 @@ namespace MODELS.Migrations
 
             modelBuilder.Entity("Project.Donation", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("DonationCategory")
                         .IsRequired()
@@ -49,11 +49,8 @@ namespace MODELS.Migrations
 
             modelBuilder.Entity("Project.User", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Address")
                         .IsRequired()
@@ -72,6 +69,12 @@ namespace MODELS.Migrations
 
                     b.Property<int>("HoursDonation")
                         .HasColumnType("int");
+
+                    b.Property<int>("IdentityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdentityId"), 1L, 1);
 
                     b.Property<string>("LastName")
                         .IsRequired()

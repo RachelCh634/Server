@@ -21,7 +21,7 @@ namespace BL.Services
         {
             return await _userData.GetAllUsers();
         }
-        public async Task<User> GetUserById(long id)
+        public async Task<User> GetUserById(string id)
         {
             return await _userData.GetUserById(id);
         }
@@ -29,11 +29,11 @@ namespace BL.Services
         {
             return await _userData.AddUser(user);
         }
-        public async Task<bool> AddHoursDonation(int hours, long id)
+        public async Task<bool> AddHoursDonation(int hours, string id)
         {
             return await _userData.AddHoursDonation(hours,id);
         }
-        public async Task<bool> RemoveHoursAvailable(int hours, long id)
+        public async Task<bool> RemoveHoursAvailable(int hours, string id)
         {
             return await _userData.RemoveHoursAvailable(hours,id);
         }

@@ -28,7 +28,7 @@ namespace DAL.Data
             return users;
         }
 
-        public async Task<User> GetUserById(long id)
+        public async Task<User> GetUserById(string id)
         {
             var user = await _context.Users.FindAsync(id);
             return user;
@@ -36,11 +36,41 @@ namespace DAL.Data
 
         public async Task<bool> AddUser(UserDto user)
         {
-            _context.Users.Add(_mapper.Map<User>(user));
+            string userId = user.Id;
+            
+            if (!IsValidIsraeliId(userId))
+            {
+                return false;
+            }
+
+            var userEntity = _mapper.Map<User>(user);
+            _context.Users.Add(userEntity);
+
             int changes = await _context.SaveChangesAsync();
+
             return changes > 0;
         }
-        public async Task<bool> AddHoursDonation(int hours, long id)
+
+        private bool IsValidIsraeliId(string id)
+        {
+            if (id.Length != 9 || !id.All(char.IsDigit))
+            {
+                return false;
+            }
+
+            int sum = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                int num = int.Parse(id[i].ToString());
+                int weight = i % 2 == 0 ? num : num * 2;
+
+                sum += weight > 9 ? weight - 9 : weight;
+            }
+
+            return sum % 10 == 0;
+        }
+
+        public async Task<bool> AddHoursDonation(int hours, string id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
@@ -51,7 +81,7 @@ namespace DAL.Data
             int changes = await _context.SaveChangesAsync();
             return changes > 0;
         }
-        public async Task<bool> RemoveHoursAvailable(int hours, long id)
+        public async Task<bool> RemoveHoursAvailable(int hours, string id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)

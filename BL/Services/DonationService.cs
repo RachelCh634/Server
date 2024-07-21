@@ -28,19 +28,19 @@ namespace BL.Services
             return await _donationData.GetAllDonation();
         }
 
-        public async Task<bool> DeductAvailableHours(int hours, long Id)
+        public async Task<bool> DeductAvailableHours(int hours, int Id)
         {
             return await _donationData.DeductAvailableHours(hours,Id);
         }
 
-        public async Task<bool> DeleteDonation(long donationId)
+        public async Task<bool> DeleteDonation(int Id)
         {
-            return await _donationData.DeleteDonation(donationId);
+            return await _donationData.DeleteDonation(Id);
         }
 
-        public async Task<bool> RateDonation(long donationId, int rating)
+        public async Task<bool> RateDonation(int Id, int rating)
         {
-            return await _donationData.RateDonation(donationId,rating);
+            return await _donationData.RateDonation(Id,rating);
         }
     }
 }

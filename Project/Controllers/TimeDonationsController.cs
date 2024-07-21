@@ -36,27 +36,27 @@ namespace Project.Controllers
         }
 
         [HttpPost("DeductAvailableHours")]
-        public async Task<ActionResult<bool>> DeductAvailableHours([FromQuery] int hours, [FromQuery] long id)
+        public async Task<ActionResult<bool>> DeductAvailableHours([FromQuery] int hours, [FromQuery] int Id)
         {
-            var res = await _donationService.DeductAvailableHours(hours, id);
+            var res = await _donationService.DeductAvailableHours(hours, Id);
             if (res)
                 return Ok(res);
             return BadRequest();
         }
 
         [HttpDelete("DeleteDonation")]
-        public async Task<ActionResult<bool>> DeleteDonation([FromQuery] long donationId)
+        public async Task<ActionResult<bool>> DeleteDonation([FromQuery] int Id)
         {
-            var res = await _donationService.DeleteDonation(donationId);
+            var res = await _donationService.DeleteDonation(Id);
             if (res)
                 return Ok(res);
             return BadRequest();
         }
 
         [HttpPost("RateDonation")]
-        public async Task<ActionResult<bool>> RateDonation([FromQuery] long donationId, [FromQuery] int rating)
+        public async Task<ActionResult<bool>> RateDonation([FromQuery] int Id, [FromQuery] int rating)
         {
-            var res = await _donationService.RateDonation(donationId, rating);
+            var res = await _donationService.RateDonation(Id, rating);
             if (res)
                 return Ok(res);
             return BadRequest();

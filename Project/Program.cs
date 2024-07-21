@@ -6,7 +6,12 @@ using System.Globalization;
 using BL.Interfaces;
 using BL.Services;
 using DAL.Data;
-using DAL.Profilies; 
+using DAL.Profilies;
+using BL;
+using Microsoft.OpenApi.Models;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
 
 namespace Project
 {
@@ -24,7 +29,6 @@ namespace Project
             // הוספת שירותים למיכל ההזרקות
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
 
             // הוספת AutoMapper באופן ידני
             builder.Services.AddSingleton<IMapper>(provider =>
@@ -39,19 +43,75 @@ namespace Project
             });
 
             // הוספת DbContext
-            builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<DBContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDataBase")));
 
-            // הוספת UserData למיכל ההזרקות
+            // הוספת UserData ו-DonationData למיכל ההזרקות
             builder.Services.AddScoped<UserData>();
             builder.Services.AddScoped<DonationData>();
-
 
             // הוספת IUserService עם ההטמעה שלו UserService
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IDonationService, DonationService>();
 
+            //jwt
+            var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+            var jwtKey = builder.Configuration["Jwt:Key"];
+
+            // בדיקת ערכים שהוגדרו
+            if (string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtKey))
+            {
+                throw new ArgumentNullException("JWT settings are not configured properly.");
+            }
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtIssuer,
+                    ValidAudience = jwtIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+                };
+            });
+
+            builder.Services.AddAuthorization();
+
+            //jwt for swagger
+            builder.Services.AddSwaggerGen(op =>
+            {
+                op.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "bearer"
+                });
+                op.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference=new OpenApiReference
+                            {
+                                Type=ReferenceType.SecurityScheme,
+                                 Id="Bearer"
+                             }
+                        },
+                        new string[]{}
+                    }
+                });
+            });
 
             var app = builder.Build();
 
@@ -63,8 +123,11 @@ namespace Project
             }
 
             app.UseHttpsRedirection();
+
+            app.UseAuthentication();
             app.UseAuthorization();
             app.MapControllers();
+
             app.Run();
         }
     }

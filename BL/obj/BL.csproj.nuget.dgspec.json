@@ -1,23 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\BL\\BL.csproj": {}
+    "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\BL\\BL.csproj": {}
   },
   "projects": {
-    "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\BL\\BL.csproj": {
+    "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\BL\\BL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\BL\\BL.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\BL\\BL.csproj",
         "projectName": "BL",
-        "projectPath": "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\BL\\BL.csproj",
-        "packagesPath": "C:\\Users\\1\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\BL\\obj\\",
+        "projectPath": "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\BL\\BL.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\BL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\1\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -25,14 +26,15 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\DAL\\DAL.csproj": {
-                "projectPath": "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\DAL\\DAL.csproj"
+              "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\DAL\\DAL.csproj": {
+                "projectPath": "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\DAL\\DAL.csproj"
               }
             }
           }
@@ -70,7 +72,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -79,24 +82,25 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.303\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\DAL\\DAL.csproj": {
+    "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\DAL\\DAL.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\DAL\\DAL.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\DAL\\DAL.csproj",
         "projectName": "DAL",
-        "projectPath": "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\DAL\\DAL.csproj",
-        "packagesPath": "C:\\Users\\1\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\DAL\\obj\\",
+        "projectPath": "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\DAL\\DAL.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\DAL\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\1\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -104,14 +108,15 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\MODELS\\MODELS.csproj": {
-                "projectPath": "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\MODELS\\MODELS.csproj"
+              "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\MODELS\\MODELS.csproj": {
+                "projectPath": "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\MODELS\\MODELS.csproj"
               }
             }
           }
@@ -153,7 +158,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -162,24 +168,25 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.303\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\MODELS\\MODELS.csproj": {
+    "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\MODELS\\MODELS.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\MODELS\\MODELS.csproj",
+        "projectUniqueName": "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\MODELS\\MODELS.csproj",
         "projectName": "MODELS",
-        "projectPath": "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\MODELS\\MODELS.csproj",
-        "packagesPath": "C:\\Users\\1\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\1\\Desktop\\תכנות\\Project-.NET\\MODELS\\obj\\",
+        "projectPath": "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\MODELS\\MODELS.csproj",
+        "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\User\\Documents\\‏‏Project .NET\\.NetProject\\MODELS\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\1\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -187,6 +194,7 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -236,7 +244,8 @@
             "net47",
             "net471",
             "net472",
-            "net48"
+            "net48",
+            "net481"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -245,7 +254,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.303\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.102\\RuntimeIdentifierGraph.json"
         }
       }
     }
