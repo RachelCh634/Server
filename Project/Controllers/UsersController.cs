@@ -3,11 +3,12 @@ using BL.Interfaces;
 using DAL.DTO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Project.Controllers
 {
-    [ApiController]
     [Route("[controller]")]
+    [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -19,7 +20,7 @@ namespace Project.Controllers
 
         [HttpGet("GetAllUsers")]
         public async Task<ActionResult<List<User>>> GetAllUsers()
-        {   
+        {
             var res = await _userService.GetAllUsers();
             if (res.Count != 0)
                 return Ok(res);
@@ -27,6 +28,7 @@ namespace Project.Controllers
         }
 
         [HttpGet("GetUserById/{id}")]
+        [Authorize]
         public async Task<ActionResult<User>> GetUserById(string id)
         {
             var res = await _userService.GetUserById(id);
@@ -44,7 +46,25 @@ namespace Project.Controllers
             return BadRequest();
         }
 
+        [HttpPost("AddAdmin")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<bool>> AddAdmin(UserDto user)
+        {
+            var res = await _userService.AddAdmin(user);
+            if (res)
+                return Ok(res);
+            return BadRequest();
+        }
+
+        [HttpGet("IsUserAdmin/{id}")]
+        public async Task<ActionResult<bool>> IsUserAdmin(string id)
+        {
+            var res = await _userService.IsUserAdmin(id);
+            return Ok(res);
+        }
+
         [HttpPost("AddHoursDonation/{hours}/{id}")]
+        [Authorize]
         public async Task<ActionResult<bool>> AddHoursDonation(int hours, string id)
         {
             var res = await _userService.AddHoursDonation(hours, id);
@@ -53,10 +73,21 @@ namespace Project.Controllers
             return BadRequest();
         }
 
-        [HttpPost("RemoveHoursAvailable/{hours}/{id}")]
+        [HttpPut("RemoveHoursAvailable/{hours}/{id}")]
+        [Authorize]
         public async Task<ActionResult<bool>> RemoveHoursAvailable(int hours, string id)
         {
             var res = await _userService.RemoveHoursAvailable(hours, id);
+            if (res)
+                return Ok(res);
+            return BadRequest();
+        }
+
+        [HttpDelete("DeleteUser/{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult<bool>> DeleteUser(string id) 
+        {
+            var res = await _userService.DeleteUser(id);
             if (res)
                 return Ok(res);
             return BadRequest();

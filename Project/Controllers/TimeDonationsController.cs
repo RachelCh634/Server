@@ -1,5 +1,6 @@
 ﻿using BL.Interfaces;
 using DAL.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace Project.Controllers
 {
     [ApiController]
     [Route("[controller]")]
+    [Authorize]
     public class TimeDonationsController : Controller
     {
         private readonly IDonationService _donationService;
@@ -35,7 +37,7 @@ namespace Project.Controllers
             return BadRequest();
         }
 
-        [HttpPost("DeductAvailableHours")]
+        [HttpPut("DeductAvailableHours")]
         public async Task<ActionResult<bool>> DeductAvailableHours([FromQuery] int hours, [FromQuery] int Id)
         {
             var res = await _donationService.DeductAvailableHours(hours, Id);
@@ -53,7 +55,7 @@ namespace Project.Controllers
             return BadRequest();
         }
 
-        [HttpPost("RateDonation")]
+        [HttpPut("RateDonation")]
         public async Task<ActionResult<bool>> RateDonation([FromQuery] int Id, [FromQuery] int rating)
         {
             var res = await _donationService.RateDonation(Id, rating);

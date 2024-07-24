@@ -8,7 +8,7 @@ namespace Project
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [JsonIgnore]
+        
         public int Id { get; set; }
         public long DonorId { get; set; }
         public string DonationCategory { get; set; }

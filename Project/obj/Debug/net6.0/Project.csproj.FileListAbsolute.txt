@@ -222,3 +222,4 @@ C:\Users\User\Documents\‏‏Project .NET\.NetProject\Project\obj\Debug\net6.0\
 C:\Users\User\Documents\‏‏Project .NET\.NetProject\Project\obj\Debug\net6.0\Project.pdb
 C:\Users\User\Documents\‏‏Project .NET\.NetProject\Project\obj\Debug\net6.0\Project.genruntimeconfig.cache
 C:\Users\User\Documents\‏‏Project .NET\.NetProject\Project\obj\Debug\net6.0\ref\Project.dll
+C:\Users\User\Documents\‏‏Project .NET\.NetProject\Project\bin\Debug\net6.0\Swashbuckle.AspNetCore.Annotations.dll

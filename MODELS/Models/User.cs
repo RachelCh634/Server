@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Project 
 {
@@ -8,7 +9,6 @@ namespace Project
     {
        
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [JsonIgnore]
         public int IdentityId { get; set; }
         [Key]
         public string Id { get; set; }
@@ -17,8 +17,9 @@ namespace Project
         public string Email { get; set; }
         public string Address { get; set; }
         public int HoursDonation { get; set; }
-        public int HoursAvailable { get; set; } 
-        public User(string id, string firstName, string lastName, string email, string address, int hoursDonation, int hoursAvailable)
+        public int HoursAvailable { get; set; }
+        public string Role { get; set; }
+        public User(string id, string firstName, string lastName, string email, string address, int hoursDonation, int hoursAvailable, string role)
         {
             Id = id;
             FirstName = firstName;
@@ -27,6 +28,7 @@ namespace Project
             Address = address;
             HoursDonation = hoursDonation;
             HoursAvailable = hoursAvailable;
+            Role = role;
         }
     }
 }

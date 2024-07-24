@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MODELS.Models;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,15 +43,21 @@ namespace Project.Controllers
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
                 var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-                var Sectoken = new JwtSecurityToken(
+                var claims = new[]
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userFind.Id),
+                    new Claim(ClaimTypes.Role, userFind.Role) 
+                };
+
+                var tokenDescriptor = new JwtSecurityToken(
                     issuer: _config["Jwt:Issuer"],
                     audience: _config["Jwt:Issuer"],
-                    null,
+                    claims: claims, // הוסף את ה-Claims
                     expires: DateTime.Now.AddMinutes(120),
                     signingCredentials: credentials
                 );
 
-                var token = new JwtSecurityTokenHandler().WriteToken(Sectoken);
+                var token = new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
 
                 return Ok(new { token });
             }
