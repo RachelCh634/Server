@@ -28,7 +28,10 @@ namespace BL.Services
         {
             return await _userData.GetUserById(id);
         }
-
+        public async Task<string> GetUserName()
+        {
+            return await _userData.GetUserName();
+        }
         public async Task<bool> AddUser(UserDto user)
         {
             return await _userData.AddUser(user);

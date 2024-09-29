@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using System.Security.Claims;
+using System.Text;
 
 public class Program
 {
@@ -17,39 +17,32 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // הוספת שירותים למיכל ההזרקות
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
 
-        // הוספת AutoMapper באופן ידני
         builder.Services.AddSingleton<IMapper>(provider =>
         {
             var config = new MapperConfiguration(cfg =>
             {
-                // הוספת פרופילים כאן
                 cfg.AddProfile<UserProfile>();
                 cfg.AddProfile<DonationProfile>();
             });
             return config.CreateMapper();
         });
 
-        // הוספת DbContext
         builder.Services.AddDbContext<DBContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultDataBase")));
 
-        // הוספת UserData ו-DonationData למיכל ההזרקות
         builder.Services.AddScoped<UserData>();
         builder.Services.AddScoped<DonationData>();
 
-        // הוספת IUserService עם ההטמעה שלו UserService
         builder.Services.AddScoped<IUserService, UserService>();
         builder.Services.AddScoped<IDonationService, DonationService>();
+        builder.Services.AddHttpContextAccessor(); // הכנס כאן את ה-HttpContextAccessor
 
-        //jwt
         var jwtIssuer = builder.Configuration["Jwt:Issuer"];
         var jwtKey = builder.Configuration["Jwt:Key"];
 
-        // בדיקת ערכים שהוגדרו
         if (string.IsNullOrEmpty(jwtIssuer) || string.IsNullOrEmpty(jwtKey))
         {
             throw new ArgumentNullException("JWT settings are not configured properly.");
@@ -71,12 +64,12 @@ public class Program
                 ValidIssuer = jwtIssuer,
                 ValidAudience = jwtIssuer,
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-                RoleClaimType = ClaimTypes.Role 
+                RoleClaimType = ClaimTypes.Role
             };
         });
 
         builder.Services.AddAuthorization();
-        //jwt for swagger
+
         builder.Services.AddSwaggerGen(op =>
         {
             op.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -97,16 +90,28 @@ public class Program
                         {
                             Type=ReferenceType.SecurityScheme,
                              Id="Bearer"
-                          }
+                        }
                     },
                     new string[]{}
                 }
             });
         });
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowSpecificOrigin",
+                policy =>
+                {
+                    policy.WithOrigins("http://localhost:4200")
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+        });
+
         var app = builder.Build();
 
-        // הגדרת הצנרת של בקשות HTTP
+        app.UseCors("AllowSpecificOrigin");
+
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -117,6 +122,7 @@ public class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
+
         app.MapControllers();
 
         app.Run();

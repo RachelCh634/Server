@@ -2,6 +2,7 @@
 using DAL.Data;
 using DAL.DTO;
 using DAL.Interfaces;
+using MODELS.Models;
 using Project;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,24 @@ namespace BL.Services
             return await _donationData.GetAllDonation();
         }
 
+        public async Task<List<Donation>> GetYourDonations()
+        {
+            return await _donationData.GetYourDonations();
+        }
+
+        public async Task<List<UserDonationLike>> GetYourLikes()
+        {
+            return await _donationData.GetYourLikes();
+        }
+        public async Task<List<DonationsReceived>> GetYourTake()
+        {
+            return await _donationData.GetYourTake();
+        }
+
+        public async Task<bool> AddLike(int donationId)
+        {
+            return await _donationData.AddLike(donationId);
+        }
         public async Task<bool> DeductAvailableHours(int hours, int Id)
         {
             return await _donationData.DeductAvailableHours(hours,Id);

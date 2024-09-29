@@ -28,10 +28,19 @@ namespace Project.Controllers
         }
 
         [HttpGet("GetUserById/{id}")]
-        [Authorize]
+        //[Authorize]
         public async Task<ActionResult<User>> GetUserById(string id)
         {
             var res = await _userService.GetUserById(id);
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+        [HttpGet("GetUserName")]
+
+        public async Task<ActionResult<User>> GetUserName()
+        {
+            var res = await _userService.GetUserName();
             if (res != null)
                 return Ok(res);
             return BadRequest();

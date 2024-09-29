@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using DAL.DTO;
 using DAL.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MODELS.Models;
 using Project;
@@ -16,11 +17,13 @@ namespace DAL.Data
     {
         private readonly DBContext _context;
         private readonly IMapper _mapper;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserData(DBContext context, IMapper mapper)
+        public UserData(DBContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<List<User>> GetAllUsers()
@@ -33,6 +36,15 @@ namespace DAL.Data
         {
             var user = await _context.Users.FindAsync(id);
             return user;
+        }
+
+        public async Task<string> GetUserName()
+        {
+            var Id = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            var user = await _context.Users.FindAsync(Id);
+            var fullName = user?.FirstName + " " + user?.LastName;
+            Console.WriteLine($"Returning user name: {fullName}");
+            return user?.FirstName+" "+user?.LastName;
         }
 
         public async Task<bool> AddUser(UserDto userDto)

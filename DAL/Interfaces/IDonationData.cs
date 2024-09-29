@@ -1,4 +1,5 @@
 ﻿using DAL.DTO;
+using MODELS.Models;
 using Project;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,10 @@ namespace DAL.Interfaces
     public interface IDonationData
     {
         public Task<List<Donation>> GetAllDonation();
+        public Task<List<Donation>> GetYourDonations();
+        public Task<List<UserDonationLike>> GetYourLikes();
+        public Task<List<DonationsReceived>> GetYourTake();
+        public Task<bool> AddLike(int donationId);
         public Task<bool> AddDonation(DonationDto donation);
         public Task<bool> DeductAvailableHours(int hours, int Id);
         public Task<bool> DeleteDonation(int Id);

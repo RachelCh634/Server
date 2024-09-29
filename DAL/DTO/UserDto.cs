@@ -21,7 +21,6 @@ namespace DAL.DTO
         [Required]
         public string LastName { get; set; }
         public string Email { get; set; }
-        public string Address { get; set; }
         [JsonIgnore]
         [SwaggerSchema(ReadOnly = true)]
         public int HoursDonation { get; set; }
@@ -31,5 +30,7 @@ namespace DAL.DTO
         [JsonIgnore]
         [SwaggerSchema(ReadOnly = true)]
         public string Role { get; set; } = "User";
+        public string Phone { get; set; }
+        public string City { get; set; }
     }
 }

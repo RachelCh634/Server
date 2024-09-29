@@ -12,6 +12,8 @@ namespace MODELS.Models
 
         public DbSet<User> Users { get; set; }
         public DbSet<Donation> Donations { get; set; }
+        public DbSet<DonationsReceived> DonationsReceiveds { get; set; }
+        public DbSet<UserDonationLike> UserDonationLikes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

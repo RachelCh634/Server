@@ -10,6 +10,7 @@ namespace BL.Interfaces
     {
         Task<List<User>> GetAllUsers();
         Task<User> GetUserById(string id);
+        Task<string> GetUserName();
         Task<bool> AddUser(UserDto user);
         Task<bool> AddAdmin(UserDto user);
         Task<bool> IsUserAdmin(string id);

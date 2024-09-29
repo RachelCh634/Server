@@ -53,10 +53,10 @@ namespace BL
                     ValidAudience = jwtIssuer,
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
-
+              
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = jwtToken.Claims.First(x => x.Type == "id").Value;
-
+                Console.WriteLine(userId);
                 context.Items["User"] = userId;
             }
             catch (Exception ex)

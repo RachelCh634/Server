@@ -1,12 +1,15 @@
 ﻿using AutoMapper;
 using DAL.DTO;
 using DAL.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using MODELS.Models;
 using Project;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 
 namespace DAL.Data
@@ -15,57 +18,171 @@ namespace DAL.Data
     {
         private readonly DBContext _context;
         private readonly IMapper _mapper;
-        public DonationData(DBContext context, IMapper mapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public DonationData(DBContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
             _mapper = mapper;
+            _httpContextAccessor = httpContextAccessor;
+
         }
 
         public async Task<bool> AddDonation(DonationDto donation)
         {
-            _context.Donations.Add(_mapper.Map<Donation>(donation));
-            string idString = donation.DonorId.ToString();
-            var user = await _context.Users.FindAsync(idString);
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                Console.WriteLine("User ID is null or empty.");
+                return false;
+            }
+            Console.WriteLine($"User ID: {userId}");
+
+            var donationEntity = _mapper.Map<Donation>(donation);
+            donationEntity.DonorId = long.Parse(userId);
+
+            Console.WriteLine($"Donation Entity: {donationEntity}");
+
+            _context.Donations.Add(donationEntity);
+
+            var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
-                return false; 
+                Console.WriteLine("User not found.");
+                return false;
             }
+
             user.HoursAvailable += donation.HoursAvailable;
             user.HoursDonation += donation.HoursAvailable;
-            int changes = await _context.SaveChangesAsync();
-            return changes > 0;
-        }
 
+            try
+            {
+                int changes = await _context.SaveChangesAsync();
+                return changes > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving changes: {ex.Message}");
+                return false;
+            }
+        }
         public async Task<List<Donation>> GetAllDonation()
         {
             var users = await _context.Donations.ToListAsync();
             return users;
         }
+        public async Task<List<Donation>> GetYourDonations()
+        {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            if (userId == null)
+            {
+                return new List<Donation>(); 
+            }
 
+            var donations = await _context.Donations
+                .Where(d => d.DonorId.ToString() == userId)
+                .ToListAsync();
+
+            return donations;
+        }
+        public async Task<List<UserDonationLike>> GetYourLikes()
+        {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            if (userId == null)
+            {
+                return new List<UserDonationLike>();
+            }
+
+            var donations = await _context.UserDonationLikes
+                .Where(d => d.UserId.ToString() == userId)
+                .ToListAsync();
+
+            return donations;
+        }
+        public async Task<List<DonationsReceived>> GetYourTake()
+        {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+            if (userId == null)
+            {
+                Console.WriteLine("null Id");
+                return new List<DonationsReceived>();
+            }
+            Console.WriteLine("good Id");
+
+            var donations = await _context.DonationsReceiveds
+                .Where(d => d.UserId == userId)
+                .ToListAsync();
+            return donations;
+        }
         public async Task<bool> DeductAvailableHours(int hours, int Id)
         {
             var donation = await _context.Donations.FindAsync(Id);
             if (donation == null)
             {
-                return false; 
+                return false;
             }
 
             donation.HoursAvailable -= hours;
+
             if (donation.HoursAvailable <= 0)
             {
-                return await DeleteDonation(Id);
+                donation.HoursAvailable = 0;
+                donation.IsActive = false;
             }
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            if (userId == null)
+            {
+                Console.WriteLine("userId == null, Token is missing or invalid");
+                var claimsIdentity = _httpContextAccessor.HttpContext?.User.Identity as ClaimsIdentity;
+                if (claimsIdentity != null)
+                {
+                    Console.WriteLine("Claims: ");
+                    foreach (var claim in claimsIdentity.Claims)
+                    {
+                        Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
+                    }
+                }
+                return false;
+            }
+            var newDonationReceived = new DonationsReceived
+            {
+                UserId = userId.ToString(),
+                Hours = hours,
+                DonationId = Id
+            };
+
+            _context.DonationsReceiveds.Add(newDonationReceived);
 
             int changes = await _context.SaveChangesAsync();
+
             return changes > 0;
         }
+        public async Task<bool> AddLike(int donationId)
+        {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            if (userId == null)
+            {
+                return false;
+            }
+            var newDonationLike = new UserDonationLike
+            {
+                UserId = userId.ToString(),
+                DonationId = donationId
+            };
+            _context.UserDonationLikes.Add(newDonationLike);
 
+            int changes = await _context.SaveChangesAsync();
+
+            return changes > 0;
+        }
         public async Task<bool> DeleteDonation(int Id)
         {
             var donation = await _context.Donations.FindAsync(Id);
             if (donation == null)
             {
-                return false; 
+                return false;
             }
             string idString = donation.DonorId.ToString();
             var user = await _context.Users.FindAsync(idString);
@@ -75,17 +192,16 @@ namespace DAL.Data
             }
             user.HoursAvailable -= donation.HoursAvailable;
             user.HoursDonation -= donation.HoursAvailable;
-            _context.Donations.Remove(donation);
+            donation.IsActive = false;
             int changes = await _context.SaveChangesAsync();
             return changes > 0;
         }
-
         public async Task<bool> RateDonation(int Id, int rating)
         {
             var donation = await _context.Donations.FindAsync(Id);
             if (donation == null)
             {
-                return false; 
+                return false;
             }
             donation.Rating = rating;
             int changes = await _context.SaveChangesAsync();
