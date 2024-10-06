@@ -91,13 +91,12 @@ namespace DAL.Data
             var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
             if (userId == null)
             {
+                Console.WriteLine("Error");
                 return new List<UserDonationLike>();
             }
-
             var donations = await _context.UserDonationLikes
-                .Where(d => d.UserId.ToString() == userId)
+                .Where(d => d.UserId == userId)
                 .ToListAsync();
-
             return donations;
         }
         public async Task<List<DonationsReceived>> GetYourTake()
@@ -146,14 +145,23 @@ namespace DAL.Data
                 }
                 return false;
             }
-            var newDonationReceived = new DonationsReceived
-            {
-                UserId = userId.ToString(),
-                Hours = hours,
-                DonationId = Id
-            };
 
-            _context.DonationsReceiveds.Add(newDonationReceived);
+            var existingDonation = _context.DonationsReceiveds.FirstOrDefault(d => d.DonationId == Id);
+            if (existingDonation != null)
+            {
+                existingDonation.Hours += hours;
+            }
+            else
+            {
+                var newDonationReceived = new DonationsReceived
+                {
+                    UserId = userId.ToString(),
+                    Hours = hours,
+                    DonationId = Id
+                };
+
+                _context.DonationsReceiveds.Add(newDonationReceived);
+            }
 
             int changes = await _context.SaveChangesAsync();
 
@@ -161,20 +169,31 @@ namespace DAL.Data
         }
         public async Task<bool> AddLike(int donationId)
         {
-            var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            var userId = _httpContextAccessor.HttpContext?.User
+                .FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
             if (userId == null)
             {
                 return false;
             }
-            var newDonationLike = new UserDonationLike
+
+            var existingLike = await _context.UserDonationLikes
+                .FirstOrDefaultAsync(like => like.DonationId == donationId);
+
+            if (existingLike != null)
             {
-                UserId = userId.ToString(),
-                DonationId = donationId
-            };
-            _context.UserDonationLikes.Add(newDonationLike);
-
+                _context.UserDonationLikes.Remove(existingLike);
+            }
+            else
+            {
+                var newDonationLike = new UserDonationLike
+                {
+                    UserId = userId.ToString(),
+                    DonationId = donationId
+                };
+                _context.UserDonationLikes.Add(newDonationLike);
+            }
             int changes = await _context.SaveChangesAsync();
-
             return changes > 0;
         }
         public async Task<bool> DeleteDonation(int Id)
@@ -207,5 +226,19 @@ namespace DAL.Data
             int changes = await _context.SaveChangesAsync();
             return changes > 0;
         }
+        public async Task<bool> IsLiked(int donationId)
+        {
+            var userId = _httpContextAccessor.HttpContext?.User
+                .FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+            if (userId == null)
+            {
+                return false;
+            }
+            var donationLike = await _context.UserDonationLikes
+                .FirstOrDefaultAsync(like => like.UserId == userId && like.DonationId == donationId);
+            return donationLike != null;
+        }
+
     }
 }

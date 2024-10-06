@@ -36,11 +36,11 @@ namespace Project.Controllers
                 return Ok(res);
             return BadRequest();
         }
-        [HttpGet("GetUserName")]
+        [HttpGet("GetUserDetails")]
 
-        public async Task<ActionResult<User>> GetUserName()
+        public async Task<ActionResult<object>> GetUserDetails()
         {
-            var res = await _userService.GetUserName();
+            var res = await _userService.GetUserDetails();
             if (res != null)
                 return Ok(res);
             return BadRequest();
@@ -65,10 +65,10 @@ namespace Project.Controllers
             return BadRequest();
         }
 
-        [HttpGet("IsUserAdmin/{id}")]
-        public async Task<ActionResult<bool>> IsUserAdmin(string id)
+        [HttpGet("IsUserAdmin")]
+        public async Task<ActionResult<bool>> IsUserAdmin()
         {
-            var res = await _userService.IsUserAdmin(id);
+            var res = await _userService.IsUserAdmin();
             return Ok(res);
         }
 

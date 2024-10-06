@@ -38,15 +38,19 @@ namespace DAL.Data
             return user;
         }
 
-        public async Task<string> GetUserName()
+        public async Task<object> GetUserDetails()
         {
             var Id = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
             var user = await _context.Users.FindAsync(Id);
-            var fullName = user?.FirstName + " " + user?.LastName;
+            var fullName = $"{user?.FirstName} {user?.LastName}";
             Console.WriteLine($"Returning user name: {fullName}");
-            return user?.FirstName+" "+user?.LastName;
+            var details = new
+            {
+                fullName,
+                user?.Role
+            };
+            return details;
         }
-
         public async Task<bool> AddUser(UserDto userDto)
         {
             string userId = userDto.Id;
@@ -87,8 +91,9 @@ namespace DAL.Data
             return changes > 0;
         }
 
-        public async Task<bool> IsUserAdmin(string id)
+        public async Task<bool> IsUserAdmin()
         {
+            var id = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
             var user = await _context.Users.FindAsync(id);
             return user != null && user.Role == "Admin";
         }
@@ -145,12 +150,19 @@ namespace DAL.Data
             {
                 return false;
             }
-
-            var donations = _context.Donations.Where(d => d.DonorId.ToString() == id);
-            _context.Donations.RemoveRange(donations);
-
             _context.Users.Remove(user);
-
+            var donations = _context.Donations.Where(d => d.DonorId.ToString() == id).ToList();
+            foreach (var donation in donations)
+            {
+                donation.IsActive = false;
+            }
+            var donationIds = donations.Select(d => d.Id).ToList();
+            var donationsToDelete = _context.UserDonationLikes.Where(d => donationIds.Contains(d.DonationId)).ToList(); 
+            if (donationsToDelete.Any()) 
+            {
+                _context.UserDonationLikes.RemoveRange(donationsToDelete); 
+            }
+            _context.Donations.UpdateRange(donations);
             int changes = await _context.SaveChangesAsync();
             return changes > 0;
         }

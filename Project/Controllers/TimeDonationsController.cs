@@ -65,8 +65,8 @@ namespace Project.Controllers
             return BadRequest();
         }
 
-        [HttpPost("AddLike")]
-        public async Task<ActionResult<bool>> AddLike(int id)
+        [HttpPost("AddLike/{id}")]
+        public async Task<ActionResult<bool>> AddLike([FromRoute] int id)
         {
             Console.WriteLine("donationId", id);
             var res = await _donationService.AddLike(id);
@@ -100,6 +100,19 @@ namespace Project.Controllers
             if (res)
                 return Ok(res);
             return BadRequest();
+        }
+
+        [HttpGet("IsLiked/{donationId}")]
+        public async Task<bool> IsLiked(int donationId)
+        {
+            try
+            {
+                return await _donationService.IsLiked(donationId);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

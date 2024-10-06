@@ -20,5 +20,6 @@ namespace DAL.Interfaces
         public Task<bool> DeductAvailableHours(int hours, int Id);
         public Task<bool> DeleteDonation(int Id);
         public Task<bool> RateDonation(int Id, int rating);
+        public Task<bool> IsLiked(int donationId);
     }
 }

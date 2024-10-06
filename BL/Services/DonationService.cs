@@ -61,5 +61,10 @@ namespace BL.Services
         {
             return await _donationData.RateDonation(Id,rating);
         }
+
+        public async Task<bool> IsLiked(int donationId)
+        {
+            return await _donationData.IsLiked(donationId);
+        }
     }
 }
