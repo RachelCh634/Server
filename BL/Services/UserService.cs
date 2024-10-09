@@ -1,6 +1,7 @@
 ﻿using BL.Interfaces;
 using DAL.Data;
 using DAL.DTO;
+using DAL.Interfaces;
 using Project;
 using System;
 using System.Collections.Generic;
@@ -52,14 +53,18 @@ namespace BL.Services
             return await _userData.AddHoursDonation(hours, id);
         }
 
-        public async Task<bool> RemoveHoursAvailable(int hours, string id)
+        public async Task<bool> RemoveHoursAvailable(int hours)
         {
-            return await _userData.RemoveHoursAvailable(hours, id);
+            return await _userData.RemoveHoursAvailable(hours);
         }
 
         public async Task<bool> DeleteUser(string id) 
         {
             return await _userData.DeleteUser(id);
+        }
+        public async Task<int> CountOfHoursAvailable()
+        {
+            return await _userData.CountOfHoursAvailable();
         }
     }
 }

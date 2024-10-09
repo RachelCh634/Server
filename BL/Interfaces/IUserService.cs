@@ -15,7 +15,8 @@ namespace BL.Interfaces
         Task<bool> AddAdmin(UserDto user);
         Task<bool> IsUserAdmin();
         Task<bool> AddHoursDonation(int hours, string id);
-        Task<bool> RemoveHoursAvailable(int hours, string id);
+        Task<bool> RemoveHoursAvailable(int hours);
         Task<bool> DeleteUser(string id);
+        Task<int> CountOfHoursAvailable();
     }
 }

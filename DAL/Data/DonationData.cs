@@ -19,13 +19,14 @@ namespace DAL.Data
         private readonly DBContext _context;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly UserData _userData;
 
-        public DonationData(DBContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public DonationData(DBContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, UserData userData)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
-
+            _userData = userData;
         }
 
         public async Task<bool> AddDonation(DonationDto donation)
@@ -133,19 +134,8 @@ namespace DAL.Data
             var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
             if (userId == null)
             {
-                Console.WriteLine("userId == null, Token is missing or invalid");
-                var claimsIdentity = _httpContextAccessor.HttpContext?.User.Identity as ClaimsIdentity;
-                if (claimsIdentity != null)
-                {
-                    Console.WriteLine("Claims: ");
-                    foreach (var claim in claimsIdentity.Claims)
-                    {
-                        Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
-                    }
-                }
                 return false;
             }
-
             var existingDonation = _context.DonationsReceiveds.FirstOrDefault(d => d.DonationId == Id);
             if (existingDonation != null)
             {
@@ -162,9 +152,12 @@ namespace DAL.Data
 
                 _context.DonationsReceiveds.Add(newDonationReceived);
             }
-
+            bool RemoveHours = await _userData.RemoveHoursAvailable(hours);
+            if (!RemoveHours)
+            {
+                return false;
+            }
             int changes = await _context.SaveChangesAsync();
-
             return changes > 0;
         }
         public async Task<bool> AddLike(int donationId)
@@ -203,7 +196,7 @@ namespace DAL.Data
             {
                 return false;
             }
-            string idString = donation.DonorId.ToString();
+            string idString = donation.DonorId.ToString().PadLeft(9, '0');
             var user = await _context.Users.FindAsync(idString);
             if (user == null)
             {

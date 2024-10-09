@@ -82,11 +82,11 @@ namespace Project.Controllers
             return BadRequest();
         }
 
-        [HttpPut("RemoveHoursAvailable/{hours}/{id}")]
+        [HttpPut("RemoveHoursAvailable/{hours}")]
         [Authorize]
-        public async Task<ActionResult<bool>> RemoveHoursAvailable(int hours, string id)
+        public async Task<ActionResult<bool>> RemoveHoursAvailable(int hours)
         {
-            var res = await _userService.RemoveHoursAvailable(hours, id);
+            var res = await _userService.RemoveHoursAvailable(hours);
             if (res)
                 return Ok(res);
             return BadRequest();
@@ -94,10 +94,19 @@ namespace Project.Controllers
 
         [HttpDelete("DeleteUser/{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult<bool>> DeleteUser(string id) 
+        public async Task<ActionResult<bool>> DeleteUser(string id)
         {
             var res = await _userService.DeleteUser(id);
             if (res)
+                return Ok(res);
+            return BadRequest();
+        }
+
+        [HttpGet("CountOfHoursAvailable")]
+        public async Task<ActionResult<int>> CountOfHoursAvailable()
+        {
+            var res = await _userService.CountOfHoursAvailable();
+            if (res != -1)
                 return Ok(res);
             return BadRequest();
         }

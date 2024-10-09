@@ -47,7 +47,8 @@ namespace DAL.Data
             var details = new
             {
                 fullName,
-                user?.Role
+                user?.Role,
+                user?.Email
             };
             return details;
         }
@@ -129,9 +130,10 @@ namespace DAL.Data
             return changes > 0;
         }
 
-        public async Task<bool> RemoveHoursAvailable(int hours, string id)
+        public async Task<bool> RemoveHoursAvailable(int hours)
         {
-            var user = await _context.Users.FindAsync(id);
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
                 return false;
@@ -165,6 +167,16 @@ namespace DAL.Data
             _context.Donations.UpdateRange(donations);
             int changes = await _context.SaveChangesAsync();
             return changes > 0;
+        }
+
+        public async Task<int> CountOfHoursAvailable()
+        {
+            var id = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            var user = await _context.Users.FindAsync(id);
+            if (user != null) {
+                return user.HoursAvailable;
+            }
+            return -1;
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Project
         public long DonorId { get; set; }
         public string DonationCategory { get; set; }
         public int HoursAvailable { get; set; }
+        public int OriginalHours { get; set; }
         public int Rating { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
@@ -24,6 +25,7 @@ namespace Project
             DonorId = donorId;
             DonationCategory = donationCategory;
             HoursAvailable = hoursAvailable;
+            OriginalHours = hoursAvailable;
             Rating = rating;
             Description = description;
             IsActive = true;

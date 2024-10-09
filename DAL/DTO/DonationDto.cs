@@ -13,13 +13,15 @@ namespace DAL.DTO
     {
         [JsonIgnore]
         [SwaggerSchema(ReadOnly = true)]
-        public int Id  { get; set; }
+        public int Id { get; set; }
         [Required]
         public long DonorId { get; set; }
         [Required]
         public string DonationCategory { get; set; }
         [Required]
         public int HoursAvailable { get; set; }
+        [JsonIgnore]
+        public int OriginalHours { get; set; }
         [JsonIgnore]
         [Required]
         [SwaggerSchema(ReadOnly = true)]
