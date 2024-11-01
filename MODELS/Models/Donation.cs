@@ -18,7 +18,7 @@ namespace Project
         public string Description { get; set; }
         public bool IsActive { get; set; }
         public DateTime Date { get; set; }
-
+        public int CountRate { get; set; } 
         public Donation(int id, long donorId, string donationCategory, int hoursAvailable, int rating, string description)
         {
             Id = id;
@@ -30,6 +30,7 @@ namespace Project
             Description = description;
             IsActive = true;
             Date= DateTime.Now;
+            CountRate = 0;
         }
 
         public Donation() { }

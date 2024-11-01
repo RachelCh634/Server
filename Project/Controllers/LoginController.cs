@@ -52,8 +52,8 @@ namespace Project.Controllers
                 var tokenDescriptor = new JwtSecurityToken(
                     issuer: _config["Jwt:Issuer"],
                     audience: _config["Jwt:Issuer"],
-                    claims: claims, // הוסף את ה-Claims
-                    expires: DateTime.Now.AddMinutes(120),
+                    claims: claims,
+                    expires: DateTime.Now.AddMonths(1),
                     signingCredentials: credentials
                 );
 

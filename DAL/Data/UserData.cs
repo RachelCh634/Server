@@ -43,7 +43,6 @@ namespace DAL.Data
             var Id = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
             var user = await _context.Users.FindAsync(Id);
             var fullName = $"{user?.FirstName} {user?.LastName}";
-            Console.WriteLine($"Returning user name: {fullName}");
             var details = new
             {
                 fullName,
@@ -129,54 +128,127 @@ namespace DAL.Data
             int changes = await _context.SaveChangesAsync();
             return changes > 0;
         }
-
         public async Task<bool> RemoveHoursAvailable(int hours)
         {
-            var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
+            try
             {
+                var userId = _httpContextAccessor.HttpContext?.User
+                    .FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+                if (userId == null)
+                {
+                    Console.WriteLine("User ID not found in claims.");
+                    return false;
+                }
+
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    Console.WriteLine($"User with ID {userId} not found.");
+                    return false;
+                }
+
+                if ((user.HoursAvailable - hours) < 0)
+                {
+                    Console.WriteLine("Not enough available hours.");
+                    return false;
+                }
+
+                user.HoursAvailable -= hours;
+                int changes = await _context.SaveChangesAsync();
+                return changes > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return false;
             }
-            if ((user.HoursAvailable - hours) < 0)
-                return false;
-            user.HoursAvailable -= hours;
-            int changes = await _context.SaveChangesAsync();
-            return changes > 0;
         }
-
         public async Task<bool> DeleteUser(string id)
         {
             var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return false;
-            }
-            _context.Users.Remove(user);
+            if (user == null) return false;
+
             var donations = _context.Donations.Where(d => d.DonorId.ToString() == id).ToList();
-            foreach (var donation in donations)
-            {
-                donation.IsActive = false;
-            }
+
             var donationIds = donations.Select(d => d.Id).ToList();
-            var donationsToDelete = _context.UserDonationLikes.Where(d => donationIds.Contains(d.DonationId)).ToList(); 
-            if (donationsToDelete.Any()) 
+            var donationsToDelete = _context.UserDonationLikes
+                .Where(d => donationIds.Contains(d.DonationId))
+                .ToList();
+
+            if (donationsToDelete.Any())
             {
-                _context.UserDonationLikes.RemoveRange(donationsToDelete); 
+                _context.UserDonationLikes.RemoveRange(donationsToDelete);
             }
-            _context.Donations.UpdateRange(donations);
+
+            var donationsReceived = await _context.DonationsReceiveds
+                .Where(d => d.UserId == id).ToListAsync();
+            _context.DonationsReceiveds.RemoveRange(donationsReceived);
+
+            var donationsLikes = await _context.UserDonationLikes
+             .Where(d => d.UserId == id).ToListAsync();
+            _context.UserDonationLikes.RemoveRange(donationsLikes);
+
+            _context.Donations.RemoveRange(donations);
+
+            _context.Users.Remove(user);
+
             int changes = await _context.SaveChangesAsync();
             return changes > 0;
         }
-
         public async Task<int> CountOfHoursAvailable()
         {
             var id = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
             var user = await _context.Users.FindAsync(id);
-            if (user != null) {
+            if (user != null)
+            {
                 return user.HoursAvailable;
             }
             return -1;
+        }
+        public Task<string?> CurrentUserId()
+        {
+            var Id = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+            return Task.FromResult(Id);
+        }
+        public async Task<User?> GetCurrentUser()
+        {
+            var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                Console.WriteLine("User ID is null or empty.");
+                return null;
+            }
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                Console.WriteLine($"User not found for ID: {userId}");
+            }
+            return user;
+        }
+        public async Task<bool> UpdateUser(UserDto updatedUser)
+        {
+            if (updatedUser == null)
+            {
+                throw new ArgumentNullException(nameof(updatedUser), "The updated user cannot be null.");
+            }
+            var existingUser = await _context.Users.FindAsync(updatedUser.Id);
+
+            if (existingUser == null)
+            {
+                Console.WriteLine($"User not found for ID: {updatedUser.Id}");
+                return false; 
+            }
+
+            existingUser.FirstName = updatedUser.FirstName;
+            existingUser.LastName = updatedUser.LastName;
+            existingUser.Email = updatedUser.Email;
+            existingUser.Phone = updatedUser.Phone;
+            existingUser.City = updatedUser.City;
+
+            await _context.SaveChangesAsync();
+            return true; 
         }
     }
 }

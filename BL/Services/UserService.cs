@@ -66,5 +66,18 @@ namespace BL.Services
         {
             return await _userData.CountOfHoursAvailable();
         }
+        public Task<string?> CurrentUserId()
+        {
+            return _userData.CurrentUserId();
+        }
+        public async Task<User?> GetCurrentUser()
+        {
+            return await _userData.GetCurrentUser();
+        }
+        public async Task<bool> UpdateUser(UserDto updatedUser)
+        {
+            return await _userData.UpdateUser(updatedUser);
+        }
+
     }
 }

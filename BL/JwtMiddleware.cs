@@ -43,6 +43,7 @@ namespace BL
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var key = Encoding.UTF8.GetBytes(jwtKey);
+
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -53,7 +54,6 @@ namespace BL
                     ValidAudience = jwtIssuer,
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);
-              
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = jwtToken.Claims.First(x => x.Type == "id").Value;
                 Console.WriteLine(userId);

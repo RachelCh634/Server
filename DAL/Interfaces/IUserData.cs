@@ -20,5 +20,8 @@ namespace DAL.Interfaces
         Task<bool> RemoveHoursAvailable(int hours);
         Task<bool> DeleteUser(string id);
         Task<int> CountOfHoursAvailable();
+        Task<string?> CurrentUserId();
+        Task<User?> GetCurrentUser();
+        Task<bool> UpdateUser(UserDto updatedUser);
     }
 }

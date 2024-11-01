@@ -28,7 +28,6 @@ namespace Project.Controllers
         }
 
         [HttpGet("GetUserById/{id}")]
-        //[Authorize]
         public async Task<ActionResult<User>> GetUserById(string id)
         {
             var res = await _userService.GetUserById(id);
@@ -107,6 +106,32 @@ namespace Project.Controllers
         {
             var res = await _userService.CountOfHoursAvailable();
             if (res != -1)
+                return Ok(res);
+            return BadRequest();
+        }
+
+        [HttpGet("CurrentUserId")]
+        public async Task<ActionResult<string?>> CurrentUserId()
+        {
+            var res = await _userService.CurrentUserId();
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+
+        [HttpGet("GetCurrentUser")]
+        public async Task<ActionResult<User?>> GetCurrentUser()
+        {
+            var res = await _userService.GetCurrentUser();
+            if (res != null)
+                return Ok(res);
+            return BadRequest();
+        }
+        [HttpPut("UpdateUser")]
+        public async Task<ActionResult<bool>> UpdateUser(UserDto updatedUser)
+        {
+            var res = await _userService.UpdateUser(updatedUser);
+            if (res)
                 return Ok(res);
             return BadRequest();
         }

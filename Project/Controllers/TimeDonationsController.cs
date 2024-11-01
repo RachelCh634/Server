@@ -33,42 +33,101 @@ namespace Project.Controllers
         [HttpGet("GetAllDonations")]
         public async Task<ActionResult<List<Donation>>> GetAllDonations()
         {
-            var res = await _donationService.GetAllDonation();
-            if (res.Count != 0)
+            try
+            {
+                var res = await _donationService.GetAllDonation();
+                if (res == null)
+                {
+                    return BadRequest("Invalid request: Unable to retrieve donations.");
+                }
                 return Ok(res);
-            return BadRequest();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Bad Request: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching donations: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching donations.");
+            }
         }
+
         [HttpGet("GetYourDonations")]
         public async Task<ActionResult<List<Donation>>> GetYourDonations()
         {
-            var res = await _donationService.GetYourDonations();
-            if (res.Count != 0)
+            try
+            {
+                var res = await _donationService.GetYourDonations();
+
+                if (res == null)
+                {
+                    return BadRequest("Invalid request: Unable to retrieve donations.");
+                }
                 return Ok(res);
-            return BadRequest();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Bad Request: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching donations: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching donations.");
+            }
         }
+
 
         [HttpGet("GetYourLikes")]
         public async Task<ActionResult<List<UserDonationLike>>> GetYourLikes()
         {
-            var res = await _donationService.GetYourLikes();
-            if (res.Count != 0)
+            try
+            {
+                var res = await _donationService.GetYourLikes();
+                if (res == null)
+                {
+                    return BadRequest("Invalid request: Unable to retrieve donations.");
+                }
                 return Ok(res);
-            return BadRequest();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Bad Request: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching donations: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching donations.");
+            }
         }
 
         [HttpGet("GetYourTake")]
         public async Task<ActionResult<List<DonationsReceived>>> GetYourTake()
         {
-            var res = await _donationService.GetYourTake();
-            if (res.Count != 0)
+            try
+            {
+                var res = await _donationService.GetYourTake();
+                if (res == null)
+                {
+                    return BadRequest("Invalid request: Unable to retrieve donations.");
+                }
                 return Ok(res);
-            return BadRequest();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest($"Bad Request: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching donations: {ex.Message}");
+                return StatusCode(500, "An error occurred while fetching donations.");
+            }
         }
 
         [HttpPost("AddLike/{id}")]
         public async Task<ActionResult<bool>> AddLike([FromRoute] int id)
         {
-            Console.WriteLine("donationId", id);
+            Console.WriteLine($"donationId: {id}");
             var res = await _donationService.AddLike(id);
             if (res)
                 return Ok(res);

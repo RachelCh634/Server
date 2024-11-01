@@ -19,7 +19,19 @@ namespace DAL.DTO
         [Required]
         public string DonationCategory { get; set; }
         [Required]
-        public int HoursAvailable { get; set; }
+
+        private int _hoursAvailable;
+
+        [Required]
+        public int HoursAvailable
+        {
+            get => _hoursAvailable; 
+            set
+            {
+                _hoursAvailable = value; 
+                OriginalHours = value; 
+            }
+        }
         [JsonIgnore]
         public int OriginalHours { get; set; }
         [JsonIgnore]

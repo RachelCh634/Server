@@ -3,6 +3,7 @@ using DAL.DTO;
 using DAL.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MODELS.Models;
 using Project;
 using System;
@@ -11,6 +12,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace DAL.Data
 {
@@ -20,13 +22,14 @@ namespace DAL.Data
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly UserData _userData;
-
-        public DonationData(DBContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, UserData userData)
+        private readonly ILogger<DonationData> _logger;
+        public DonationData(DBContext context, IMapper mapper, IHttpContextAccessor httpContextAccessor, UserData userData, ILogger<DonationData> logger)
         {
             _context = context;
             _mapper = mapper;
             _httpContextAccessor = httpContextAccessor;
             _userData = userData;
+            _logger = logger;
         }
 
         public async Task<bool> AddDonation(DonationDto donation)
@@ -78,13 +81,12 @@ namespace DAL.Data
             var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
             if (userId == null)
             {
-                return new List<Donation>(); 
+                return new List<Donation>();
             }
-
+            var userIdInt = int.Parse(userId);
             var donations = await _context.Donations
-                .Where(d => d.DonorId.ToString() == userId)
+                .Where(d => d.DonorId == userIdInt)
                 .ToListAsync();
-
             return donations;
         }
         public async Task<List<UserDonationLike>> GetYourLikes()
@@ -103,14 +105,11 @@ namespace DAL.Data
         public async Task<List<DonationsReceived>> GetYourTake()
         {
             var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-
             if (userId == null)
             {
                 Console.WriteLine("null Id");
                 return new List<DonationsReceived>();
             }
-            Console.WriteLine("good Id");
-
             var donations = await _context.DonationsReceiveds
                 .Where(d => d.UserId == userId)
                 .ToListAsync();
@@ -118,47 +117,91 @@ namespace DAL.Data
         }
         public async Task<bool> DeductAvailableHours(int hours, int Id)
         {
-            var donation = await _context.Donations.FindAsync(Id);
-            if (donation == null)
+            try
             {
-                return false;
-            }
+                _logger.LogInformation($"Starting DeductAvailableHours with Id: {Id} and hours: {hours}");
 
-            donation.HoursAvailable -= hours;
-
-            if (donation.HoursAvailable <= 0)
-            {
-                donation.HoursAvailable = 0;
-                donation.IsActive = false;
-            }
-            var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
-            if (userId == null)
-            {
-                return false;
-            }
-            var existingDonation = _context.DonationsReceiveds.FirstOrDefault(d => d.DonationId == Id);
-            if (existingDonation != null)
-            {
-                existingDonation.Hours += hours;
-            }
-            else
-            {
-                var newDonationReceived = new DonationsReceived
+                var donation = await _context.Donations.FindAsync(Id);
+                if (donation == null)
                 {
-                    UserId = userId.ToString(),
-                    Hours = hours,
-                    DonationId = Id
-                };
+                    _logger.LogWarning($"Donation with Id: {Id} not found.");
+                    return false;
+                }
 
-                _context.DonationsReceiveds.Add(newDonationReceived);
+                if (donation.HoursAvailable <= 0)
+                {
+                    _logger.LogInformation($"Donation with Id: {Id} has no available hours.");
+                    donation.HoursAvailable = 0;
+                    donation.IsActive = false;
+                }
+                var userId = _httpContextAccessor.HttpContext?.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+                if (userId == null)
+                {
+                    _logger.LogWarning("User not authenticated.");
+                    return false;
+                }
+
+                var user = await _context.Users.FindAsync(userId.PadLeft(9, '0'));
+                if (user == null)
+                {
+                    _logger.LogWarning("User not found for ID: {UserId}", userId);
+                    return false;
+                }
+
+                var donor = await _context.Users.FindAsync(donation.DonorId.ToString().PadLeft(9, '0'));
+                if (donor == null)
+                {
+                    _logger.LogWarning($"Donor not found for Donation ID: {Id}");
+                    return false;
+                }
+
+                var existingDonation = _context.DonationsReceiveds.FirstOrDefault(d => d.DonationId == Id && d.UserId == user.Id);
+                if (existingDonation != null)
+                {
+                    existingDonation.Hours += hours;
+                    _logger.LogInformation($"Updated existing donation received for Donation ID: {Id}");
+                }
+                else
+                {
+                    var newDonationReceived = new DonationsReceived
+                    {
+                        UserId = userId.ToString(),
+                        Hours = hours,
+                        DonationId = Id,
+                        DonorName = donor.FirstName + " " + donor.LastName,
+                        Category = donation.DonationCategory,
+                        DonorEmail = donor.Email,
+                        DonorPhone = donor.Phone,
+                    };
+                    _context.DonationsReceiveds.Add(newDonationReceived);
+                    _logger.LogInformation($"Added new donation received for Donation ID: {Id}");
+                }
+
+                donation.HoursAvailable -= hours;
+                bool RemoveHours = await _userData.RemoveHoursAvailable(hours);
+                if (!RemoveHours)
+                {
+                    _logger.LogWarning("Failed to remove hours available for user ID: {UserId}", userId);
+                    return false;
+                }
+                try
+                {
+                    _context.Entry(donation).State = EntityState.Modified;
+                    int changes = await _context.SaveChangesAsync();
+                    _logger.LogInformation($"Changes saved: {changes}");
+                    return changes > 0;
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex, "Database update error occurred.");
+                    return false;
+                }
             }
-            bool RemoveHours = await _userData.RemoveHoursAvailable(hours);
-            if (!RemoveHours)
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "An error occurred while deducting available hours.");
                 return false;
             }
-            int changes = await _context.SaveChangesAsync();
-            return changes > 0;
         }
         public async Task<bool> AddLike(int donationId)
         {
@@ -169,9 +212,9 @@ namespace DAL.Data
             {
                 return false;
             }
-
+            Console.WriteLine($"UserId: {userId}");
             var existingLike = await _context.UserDonationLikes
-                .FirstOrDefaultAsync(like => like.DonationId == donationId);
+                .FirstOrDefaultAsync(like => like.DonationId == donationId && like.UserId == userId);
 
             if (existingLike != null)
             {
@@ -204,18 +247,40 @@ namespace DAL.Data
             }
             user.HoursAvailable -= donation.HoursAvailable;
             user.HoursDonation -= donation.HoursAvailable;
-            donation.IsActive = false;
+            _context.Donations.Remove(donation);
+            var likes = _context.UserDonationLikes.Where(like => like.DonationId == Id);
+            _context.UserDonationLikes.RemoveRange(likes);
             int changes = await _context.SaveChangesAsync();
             return changes > 0;
         }
         public async Task<bool> RateDonation(int Id, int rating)
         {
-            var donation = await _context.Donations.FindAsync(Id);
-            if (donation == null)
+            var donationReceived = await _context.DonationsReceiveds.FindAsync(Id);
+            if (donationReceived == null) { return false; }
+
+            var donation = await _context.Donations.FindAsync(donationReceived.DonationId);
+            if (donation != null)
             {
-                return false;
+                int previousRating = donationReceived.Rating;
+
+                int totalRating = donation.Rating * donation.CountRate;
+
+                totalRating = totalRating - previousRating + rating;
+
+                if (previousRating == 0)
+                {
+                    donation.CountRate += 1;
+                }
+                if (donation.CountRate > 0)
+                {
+                    donation.Rating = totalRating / donation.CountRate;
+                }
+                else
+                {
+                    donation.Rating = 0;
+                }
             }
-            donation.Rating = rating;
+            donationReceived.Rating = rating;
             int changes = await _context.SaveChangesAsync();
             return changes > 0;
         }
@@ -232,6 +297,5 @@ namespace DAL.Data
                 .FirstOrDefaultAsync(like => like.UserId == userId && like.DonationId == donationId);
             return donationLike != null;
         }
-
     }
 }
