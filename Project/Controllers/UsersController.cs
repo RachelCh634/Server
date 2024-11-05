@@ -92,7 +92,6 @@ namespace Project.Controllers
         }
 
         [HttpDelete("DeleteUser/{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<bool>> DeleteUser(string id)
         {
             var res = await _userService.DeleteUser(id);
